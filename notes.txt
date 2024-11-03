@@ -1,0 +1,110 @@
+# Docker notes...
+
+# et docker ps kun je de naam en ID van de containers vinden.
+# docker ps -a laat alle containers zien, ook de gestopte.
+# 	Zo kun je zien welke containers er zijn aangemaakt, zelfs
+#	als ze neit actief draaien.
+
+# je kunt de naam ook wijzingen mbv {docker-compose -p mijnprojectnaam up -d}
+# bekijk de logs met {docker logs <container-naam>}
+
+
+## docker-compose down -v -> Verwijder de volume om de data te resetten
+#		Zo wordt het script opnieuw uitgevoerd als ik hem opnieuw opstart.
+
+
+---
+	1. De Drie Overige Gebruikers in MariaDB
+In je lijst van gebruikers in MariaDB zien we drie standaardgebruikers:
+
+	
+	mariadb.sys: Dit is een interne systeemgebruiker die door MariaDB wordt gebruikt voor systeembeheer, zoals bij performance schema’s en informatiebeheer. Deze gebruiker kan worden genegeerd bij dagelijkse taken, omdat deze alleen door MariaDB zelf wordt gebruikt en geen directe toegang nodig heeft.
+	mysql: Dit is ook een interne gebruiker die soms wordt aangemaakt om specifieke databaseacties te faciliteren. Deze gebruiker wordt zelden gebruikt buiten de MariaDB internals.
+	root: De root-gebruiker heeft volledige toegang tot de database en is standaard beperkt tot localhost voor veiligheid, wat betekent dat deze alleen toegang heeft tot MariaDB als er verbinding wordt gemaakt binnen de container of vanaf de host zelf. Deze beperking tot localhost voorkomt toegang vanaf externe bronnen.
+	2. Wat betekent % in de Hostkolom?
+	% in de hostkolom betekent dat de gebruiker toegang heeft vanaf elke IP-adres binnen het netwerk. Dit is handig als je de gebruikers van WordPress (zoals admin_user en basic_user) wilt laten verbinden vanuit andere containers (zoals de WordPress-container).
+	In een Docker-netwerk betekent dit dat gebruikers met % als host toegang hebben vanaf elke andere container die deel uitmaakt van hetzelfde Docker-netwerk, zoals ingesteld in je docker-compose.yml.
+	Beveiligingstip: Hoewel % flexibiliteit biedt, is het veiliger om toegang te beperken tot specifieke IP-adressen of hostnamen waar mogelijk.
+	3. Waarom MariaDB opstarten met mysqld_safe?
+	mysqld_safe is een speciale wrapper die MariaDB extra bescherming biedt tijdens het opstarten:
+		
+		Automatisch Herstarten bij Fouten: Als mysqld crasht of stopt, probeert mysqld_safe de server opnieuw op te starten. Dit kan handig zijn bij onverwachte fouten.
+		Logboekbeheer en Geavanceerde Parameters: mysqld_safe biedt betere logboekregistratie en ondersteunt enkele opties die mysqld zelf niet direct biedt.
+		Stabiliteit: Voor Docker is mysqld_safe meestal aanbevolen, omdat het Docker-container actief houdt en stabieler maakt bij opstartproblemen.
+		4. Waarom het Probleem met de Socket en de Vereiste voor /run/mysqld
+		MariaDB gebruikt standaard een socketbestand om verbindingen op dezelfde server te accepteren. Dit bestand, meestal /run/mysqld/mysqld.sock, wordt gebruikt voor lokale verbindingen, zoals wanneer je inlogt op de MariaDB-server zonder netwerkcommunicatie.
+		
+		Om deze socket correct te laten werken:
+			
+			Moet de directory /run/mysqld bestaan en schrijfrechten hebben voor de mysql gebruiker.
+			x-rechten (uitvoerrechten) zijn vereist voor de directory, zodat de gebruiker toegang heeft tot het socketbestand.
+			In je Dockerfile hebben we deze directory aangemaakt en de juiste permissies ingesteld, zodat MariaDB probleemloos verbindingen kan accepteren via de socket.
+			---
+
+Wat zijn de information en performance schema's?
+information_schema
+information_schema is een systeemdatabase die metadata bevat over de database-instantie. Het geeft informatie over de structuur van je databases, tabellen, kolommen, en andere databaseobjecten. Het wordt vaak gebruikt door ontwikkelaars en beheerders om de configuratie en structuur van databases te verkennen.
+
+Belangrijkste functies van information_schema:
+
+Structuurinformatie: Bevat informatie over databases, tabellen, kolommen, indexen, en views.
+Beveiliging en rechten: Informatie over gebruikersrechten en privileges.
+Constraints: Informatie over relaties en beperkingen, zoals primaire en externe sleutels.
+Veelgebruikte tabellen in information_schema:
+
+TABLES: Bevat een lijst van alle tabellen in de database.
+COLUMNS: Informatie over de kolommen in elke tabel, inclusief datatype en eigenschappen.
+USER_PRIVILEGES: Geeft een overzicht van de rechten van gebruikers.
+SCHEMATA: Een lijst van alle databases op de server.
+Voorbeeld van gebruik: Om alle tabellen in de database wordpress_db op te sommen, kun je een query uitvoeren op de TABLES-tabel in information_schema:
+
+sql
+Copy code
+SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'wordpress_db';
+2. performance_schema
+performance_schema is ontworpen om prestatiestatistieken te verzamelen over de werking van de database. Het is een hulpmiddel voor het monitoren en analyseren van prestaties, inclusief informatie over query’s, wachttijden, en systeembronnen. Dit schema is vooral nuttig voor databasebeheerders die de efficiëntie van de database willen verbeteren of problemen met de prestaties willen oplossen.
+
+Belangrijkste functies van performance_schema:
+
+Query-prestaties: Geeft gedetailleerde informatie over de prestaties van individuele query’s, zoals wachttijden en uitvoertijden.
+Systeemresourcegebruik: Informatie over CPU- en geheugengebruik door verschillende databaseprocessen.
+Events en waits: Informatie over events (gebeurtenissen) en hoeveel tijd de database wacht tijdens bepaalde acties, wat helpt bij het opsporen van knelpunten.
+Veelgebruikte tabellen in performance_schema:
+
+events_statements_summary_by_digest: Geeft een overzicht van query-statistieken, zoals de meest uitgevoerde query’s en hun prestaties.
+file_summary_by_event_name: Informatie over het gebruik van bestanden en input/output (I/O)-activiteiten.
+threads: Toont de status van actieve threads en hun CPU- en geheugengebruik.
+Voorbeeld van gebruik: Om te zien welke query’s het meeste worden uitgevoerd, kun je deze query uitvoeren:
+
+sql
+Copy code
+SELECT * FROM performance_schema.events_statements_summary_by_digest ORDER BY COUNT_STAR DESC LIMIT 10;
+Dit geeft een overzicht van de tien meest uitgevoerde query’s, wat handig is voor het identificeren van mogelijke optimalisaties.
+
+Samenvatting
+information_schema is als een databasedocumentatie die alle details van de structuur en configuratie van databases bevat.
+performance_schema is een monitoringtool die helpt bij het analyseren van de prestaties en het identificeren van knelpunten.
+Beide schema's zijn bedoeld om inzicht te geven in de werking van de database zonder dat ze echte gebruikersgegevens bevatten. Ze zijn standaard aanwezig en kunnen worden geraadpleegd zonder deze apart te hoeven aanmaken.
+
+
+
+##################################################
+
+Bij het opzetten van de Wordpress container:
+	allereerst vergeten port te exposen, dus had geen toegang
+	van buitenaf.
+
+	toen toegang maar acces forbidden (403) dit opgelost door 
+
+	als eerste geprobeerd eigenaar aan te passen.. apache gebruikt nl de user: www-data
+
+		<Directory /var/www/html>
+    	Options Indexes FollowSymLinks
+    	AllowOverride All
+    	Require all granted
+		</Directory>
+
+		toe te voegen aan: /etc/apache2/sites-available/000-default.conf
+
+		toen apache opnieuw opgestart: apachectl restart
+		 --> Wat is apache? Een webserver?

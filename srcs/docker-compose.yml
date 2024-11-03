@@ -1,0 +1,48 @@
+services:
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      ADMIN_USER: ${ADMIN_USER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      REGULAR_USER: ${REGULAR_USER}
+      REGULAR_PASSWORD: ${REGULAR_PASSWORD}
+    volumes:
+      - mariadb-data:/var/lib/mysql
+      # /home/ewehl/data/mariadb:/var/lib/mysql
+    networks:
+      - inception-network
+  wordpress:
+    build:
+      context: ./requirements/wordpress
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - wordpress-data:/var/www/html
+      #/home/ewehl/data/wordpress-data:/var/www/html
+    depends_on:
+      - mariadb
+    networks:
+      - inception-network
+    ports:
+      - "8080:80"
+
+volumes:
+  mariadb-data:
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   device: /home/ewehl/data/mariadb # Voor de vm
+    #   o: bind
+  wordpress-data:
+
+networks:
+  inception-network:
+
