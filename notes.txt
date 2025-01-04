@@ -107,4 +107,14 @@ Bij het opzetten van de Wordpress container:
 		toe te voegen aan: /etc/apache2/sites-available/000-default.conf
 
 		toen apache opnieuw opgestart: apachectl restart
-		 --> Wat is apache? Een webserver?
+		 --> Wat is apache? Een webserver? ->> Dit mag helemaal niet volgens subject,
+		 overgestapt naar php-fpm
+
+	# Host volume en permissions
+
+
+	# Debuggy
+	docker exec -it wordpress-container-name cat /etc/php/7.4/fpm/pool.d/www.conf
+	docker exec -it nginx-container-name cat /etc/nginx/nginx.conf
+
+

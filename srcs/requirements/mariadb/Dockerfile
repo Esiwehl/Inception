@@ -5,9 +5,13 @@ FROM debian:bullseye
 RUN apt-get update && apt-get install -y\
  mariadb-server\
  gettext\
+ nano\
  && apt-get clean
 
 RUN mkdir -p /var/lib/mysql
+
+# Pas bind-address aan naar 0.0.0.0, zodat aer ook van buitenaf mee kan worden gecommuniceerd.
+RUN sed -i "s/^bind-address\s*=.*/bind-address = 0.0.0.0/" /etc/mysql/mariadb.conf.d/50-server.cnf
 
 # issues met Dit kan gebeuren wanneer de vereiste map voor de socket 
 # iet bestaat of niet de juiste rechten heeft.
