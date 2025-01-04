@@ -1,7 +1,7 @@
-# **Inception Project - WordPress Docker Infrastructure**
+# **Inception Of Things**
 
 ## **Project Overview**
-The **Inception** project is an introduction to containerization and Docker. The goal is to build a secure, scalable, and modular Docker-based infrastructure to deploy a WordPress site, complete with a MariaDB database and served through an NGINX web server.
+This is an introduction to containerization and Docker. The goal is to build a secure, scalable, and modular Docker-based infrastructure to deploy a WordPress site, complete with a MariaDB database and served through an NGINX web server.
 
 The project adheres to best practices for containerization, including isolated services, volume persistence, and secure communication using TLS. By the end of this project, you'll have a fully functional WordPress deployment running in Docker containers, accessible via a custom domain.
 
