@@ -118,3 +118,5 @@ Bij het opzetten van de Wordpress container:
 	docker exec -it nginx-container-name cat /etc/nginx/nginx.conf
 
 
+What's left?
+Makefile and volumes for when @ school.
