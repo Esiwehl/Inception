@@ -5,7 +5,7 @@ mysqld_safe &
 
 # Wachten tot MariaDB volledig is opgestart
 echo "Wachten op MariaDB-server om op te starten..."
-timeout=45 # Maximaal 45 seconden wachten
+timeout=120 # Maximaal 120 seconden wachten
 elapsed=0
 
 while ! mysqladmin ping -h localhost --silent; do
