@@ -6,8 +6,7 @@ dir:
 	@mkdir -p /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/wordpress
 
 rmdir:
-	@rm -Rf /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/mariadb
-	@rm -Rf /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/wordpress
+	@rm -Rf /Users/ewehl/Documents/Core/Inception/srcs/requirements/data
 
 down:
 	@docker compose -f ./srcs/docker-compose.yml down
@@ -25,12 +24,8 @@ mariadb:
 wp:
 	@docker exec -it srcs-wordpress-1 bash
 
-clean:
-	@docker stop $$(docker ps -qa);\
-	docker rm $$(docker ps -qa);\
-	docker rmi -f $$(docker images -qa);\
-	docker volume rm $$(docker volume ls -q);\
-	docker network rm $$(docker network ls -q);\
+clean: rmdir
+	@docker compose -f ./srcs/docker-compose.yml down -v
 
 prune: rmdir
 	@docker system prune -af
