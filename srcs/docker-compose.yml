@@ -12,9 +12,9 @@ services:
       REGULAR_USER: ${REGULAR_USER}
       REGULAR_PASSWORD: ${REGULAR_PASSWORD}
     volumes:
-      - mariadb-data:/var/lib/mysql
-      # - /Users/ewehl/Documents/Core/Inception/srcs/requirements/mariadb
+      - /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/mariadb:/var/lib/mysql
       # /home/ewehl/data/mariadb:/var/lib/mysql
+      # - mariadb-data:/var/lib/mysql
     networks:
       - inception-network
     restart: always
@@ -38,8 +38,9 @@ services:
       REGULAR_PASSWORD: ${REGULAR_PASSWORD}
       REGULAR_EMAIL: ${REGULAR_EMAIL}
     volumes:
-      - wordpress-data:/var/www/html
-      #/home/ewehl/data/wordpress-data:/var/www/html
+      - /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/wordpress:/var/www/html
+      # - /home/ewehl/data/wordpress:/var/www/html
+      # - wordpress:/var/www/html
     depends_on:
       mariadb:
         condition: service_healthy
@@ -51,34 +52,37 @@ services:
   nginx:
     build:
       context: ./requirements/nginx
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
     ports:
       - "443:443"
     depends_on:
       - wordpress
-    #   wordpress:
-    #     condition: service_healthy
     networks:
       - inception-network
     volumes:
-      - wordpress-data:/var/www/html
+      - /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/wordpress:/var/www/html
+      # - /home/ewehl/data/wordpress:/var/www/html
+      # - wordpress:/var/www/html
 
 
 volumes:
-  mariadb-data:
-    # driver: local
-    # driver_opts:
-    #   type: none
+  mariadb:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/mariadb
     #   device: /home/ewehl/data/mariadb # Voor de vm
-    #   device: /Users/ewehl/Documents/Core/Inception/srcs/requirements/mariadb
-    #   o: bind
-  wordpress-data:
-    # driver: local
-    # driver_opts:
-    #   type: none
+  wordpress:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/wordpress
     #   device: /home/ewehl/data/mariadb # Voor de vm
-    #   device: /Users/ewehl/Documents/Core/Inception/srcs/requirements/mariadb
-    #   o: bind
 
 networks:
   inception-network:
+    driver: bridge
 
