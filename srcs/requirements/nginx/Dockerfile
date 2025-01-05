@@ -15,7 +15,6 @@ COPY conf/nginx.conf /etc/nginx/nginx.conf
 # COPY tools/index.html /usr/share/nginx/html
 
 # Generate SSL certificates
-ENV DOMAIN_NAME=<login>.42.fr
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -keyout /etc/nginx/ssl/key.pem -out /etc/nginx/ssl/cert.pem \
     -subj "/C=US/ST=State/L=City/O=Organization/OU=Department/CN=$DOMAIN_NAME"
