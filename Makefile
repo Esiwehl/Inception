@@ -2,11 +2,11 @@ all: dir
 	@docker compose -f ./srcs/docker-compose.yml up -d --build
 
 dir:
-	@mkdir -p /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/mariadb
-	@mkdir -p /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/wordpress
+	@sudo mkdir -p /home/ewehl/data/mariadb
+	@sudo mkdir -p /home/ewehl/data/wordpress
 
 rmdir:
-	@rm -Rf /Users/ewehl/Documents/Core/Inception/srcs/requirements/data
+	@sudo rm -Rf /home/ewehl/data
 
 down:
 	@docker compose -f ./srcs/docker-compose.yml down
