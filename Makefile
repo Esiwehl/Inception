@@ -16,13 +16,13 @@ re: dir
 	@docker compose -f ./srcs/docker-compose.yml up -d --build
 
 nginx:
-	@docker exec -it srcs-nginx-1 bash
+	@docker exec -it nginx bash
 
 mariadb:
-	@docker exec -it srcs-mariadb-1 bash
+	@docker exec -it mariadb bash
 
 wp:
-	@docker exec -it srcs-wordpress-1 bash
+	@docker exec -it wordpress bash
 
 clean: rmdir
 	@docker compose -f ./srcs/docker-compose.yml down -v
