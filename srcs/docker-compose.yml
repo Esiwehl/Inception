@@ -1,7 +1,9 @@
 services:
   mariadb:
-    build:
-      context: ./requirements/mariadb
+    image: mariadb
+    container_name: mariadb
+    hostname: mariadb
+    build: ./requirements/mariadb
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -22,8 +24,10 @@ services:
       timeout: 5s
       retries: 10
   wordpress:
-    build:
-      context: ./requirements/wordpress
+    image: wordpress
+    container_name: wordpress
+    hostname: wordpress
+    build: ./requirements/wordpress
     environment:
       WORDPRESS_DB_HOST: mariadb:3306
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
@@ -46,8 +50,10 @@ services:
       - inception-network
     restart: always
   nginx:
-    build:
-      context: ./requirements/nginx
+    image: nginx
+    container_name: nginx
+    hostname: nginx
+    build: ./requirements/nginx
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME}
     ports:
