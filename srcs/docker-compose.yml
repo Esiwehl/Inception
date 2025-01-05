@@ -12,9 +12,8 @@ services:
       REGULAR_USER: ${REGULAR_USER}
       REGULAR_PASSWORD: ${REGULAR_PASSWORD}
     volumes:
-      - /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/mariadb:/var/lib/mysql
+      - mariadb:/var/lib/mysql
       # /home/ewehl/data/mariadb:/var/lib/mysql
-      # - mariadb-data:/var/lib/mysql
     networks:
       - inception-network
     restart: always
@@ -22,7 +21,7 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 10
   wordpress:
     build:
       context: ./requirements/wordpress
@@ -38,7 +37,7 @@ services:
       REGULAR_PASSWORD: ${REGULAR_PASSWORD}
       REGULAR_EMAIL: ${REGULAR_EMAIL}
     volumes:
-      - /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/wordpress:/var/www/html
+      - wordpress:/var/www/html
       # - /home/ewehl/data/wordpress:/var/www/html
       # - wordpress:/var/www/html
     depends_on:
@@ -53,7 +52,7 @@ services:
     build:
       context: ./requirements/nginx
     environment:
-      WORDPRESS_DB_HOST: mariadb:3306
+      DOMAIN_NAME: ${DOMAIN_NAME}
     ports:
       - "443:443"
     depends_on:
@@ -61,7 +60,7 @@ services:
     networks:
       - inception-network
     volumes:
-      - /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/wordpress:/var/www/html
+      - wordpress:/var/www/html
       # - /home/ewehl/data/wordpress:/var/www/html
       # - wordpress:/var/www/html
 
