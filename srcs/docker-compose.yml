@@ -13,7 +13,6 @@ services:
       REGULAR_PASSWORD: ${REGULAR_PASSWORD}
     volumes:
       - mariadb:/var/lib/mysql
-      # /home/ewehl/data/mariadb:/var/lib/mysql
     networks:
       - inception-network
     restart: always
@@ -38,8 +37,6 @@ services:
       REGULAR_EMAIL: ${REGULAR_EMAIL}
     volumes:
       - wordpress:/var/www/html
-      # - /home/ewehl/data/wordpress:/var/www/html
-      # - wordpress:/var/www/html
     depends_on:
       mariadb:
         condition: service_healthy
@@ -61,8 +58,6 @@ services:
       - inception-network
     volumes:
       - wordpress:/var/www/html
-      # - /home/ewehl/data/wordpress:/var/www/html
-      # - wordpress:/var/www/html
 
 
 volumes:
@@ -71,15 +66,13 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/mariadb
-    #   device: /home/ewehl/data/mariadb # Voor de vm
+      device: /home/ewehl/data/mariadb
   wordpress:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: /Users/ewehl/Documents/Core/Inception/srcs/requirements/data/wordpress
-    #   device: /home/ewehl/data/mariadb # Voor de vm
+      device: /home/ewehl/data/wordpress
 
 networks:
   inception-network:
